@@ -1,98 +1,115 @@
+#Source code for  Coursera "Getting and Cleaning Data" course project
+#Author:  Larry Reeder
+#
+#Code for the most part follows Google's R style guidelines. 
+#See https://google-styleguide.googlecode.com/svn/trunk/Rguide.xml
+
+#dependencies
 library(plyr);
+library(reshape2);
 
 # create working directory
- tmpdir <- "tmp";
- working_dir <- file.path(".", tmpdir);
- dir.create(working_dir, showWarnings = FALSE)
+tmpdir <- "tmp";
+working.dir <- file.path(".", tmpdir);
+dir.create(working.dir, showWarnings = FALSE)
 
 #extract package 
- unzip("0Dataset.zip", exdir=working_dir);
+unzip("0Dataset.zip", exdir=working.dir);
 
 #1. Merges the training and the test sets to create one data set.
 
-
 #load labels
-dataset_dir <- file.path(working_dir, "UCI HAR Dataset");
-labels_file <- file.path(dataset_dir, "activity_labels.txt");
-labels <- read.table(labels_file, stringsAsFactors=FALSE);
+dataset.dir <- file.path(working.dir, "UCI HAR Dataset");
+labels.file <- file.path(dataset.dir, "activity_labels.txt");
+labels <- read.table(labels.file, stringsAsFactors=FALSE);
 
 
-test_dir <- file.path(dataset_dir, "test");
+test.dir <- file.path(dataset.dir, "test");
 
-xtest_file <- file.path(test_dir, "X_test.txt");
-ytest_file <- file.path(test_dir, "y_test.txt");
+xtest.file <- file.path(test.dir, "X_test.txt");
+ytest.file <- file.path(test.dir, "y_test.txt");
 
-test_measures <- read.table(xtest_file, stringsAsFactors=FALSE);
-test_labels <- read.table(ytest_file, stringsAsFactors=FALSE);
-test_measures$Activity <- test_labels$V1;
+test.measures <- read.table(xtest.file, stringsAsFactors=FALSE);
+test.labels <- read.table(ytest.file, stringsAsFactors=FALSE);
+test.measures$Activity <- test.labels$V1;
 
-train_dir <- file.path(dataset_dir, "train");
-xtrain_file <- file.path(train_dir, "X_train.txt");
-ytrain_file <- file.path(train_dir, "y_train.txt");
+train.dir <- file.path(dataset.dir, "train");
+xtrain.file <- file.path(train.dir, "X_train.txt");
+ytrain.file <- file.path(train.dir, "y_train.txt");
 
 #read training data and append labels to it
-train_measures <- read.table(xtrain_file, stringsAsFactors=FALSE);
-train_labels <- read.table(ytrain_file, stringsAsFactors=FALSE);
-train_measures$Activity <- train_labels$V1;
+train.measures <- read.table(xtrain.file, stringsAsFactors=FALSE);
+train.labels <- read.table(ytrain.file, stringsAsFactors=FALSE);
+train.measures$Activity <- train.labels$V1;
 
 
 #append train to test
-test_and_train_measures <- rbind(test_measures, train_measures);
+test.and.train.measures <- rbind(test.measures, train.measures);
 
 
 #2. Extracts only the measurements on the mean and standard deviation for each measurement.
 
-features_file <- file.path(dataset_dir, "features.txt");
-features <- read.table(features_file, stringsAsFactors=FALSE);
+features.file <- file.path(dataset.dir, "features.txt");
+features <- read.table(features.file, stringsAsFactors=FALSE);
 
 #vector of indices for features that are the mean
-mean_idx <- grep(".*mean().*", features$V2);
+mean.idx <- grep(".*mean\\(\\).*", features$V2);
 #vector of indices for features that are the stddev
-std_idx <- grep(".*std().*", features$V2);
+std.idx <- grep(".*std\\(\\).*", features$V2);
 #appendand sort to get stddev AND mean indices
-std_or_mean_idx <- sort(append(mean_idx, std_idx));
+std.or.mean.idx <- sort(append(mean.idx, std.idx));
 
 #add Activity column (very last one) since we will need that one too
-std_or_mean_and_activity_idx <- append(std_or_mean_idx, ncol(test_and_train_measures))
+std.or.mean.and.activity.idx <- append(std.or.mean.idx, ncol(test.and.train.measures))
 
-std_or_mean_measures <- test_and_train_measures[std_or_mean_and_activity_idx];
+std.or.mean.measures <- test.and.train.measures[std.or.mean.and.activity.idx];
 
 
 #3. Use descriptive activity names to name the activities in the data set
-measure_activities <- data.frame(std_or_mean_measures$Activity);
-colnames(measure_activities) <- c("V1");
+measure.activities <- data.frame(std.or.mean.measures$Activity);
+colnames(measure.activities) <- c("V1");
 
 
 #standard merge function reorders the rows, with no way to prevent it
-#label_string <- merge(labels, measure_activities, sort=FALSE,by.x="V1", by.y="V1");
+#label.string <- merge(labels, measure.activities, sort=FALSE,by.x="V1", by.y="V1");
 #instead use plyr's join function
-label_string <- join(measure_activities, labels by="V1");
-std_or_mean_measures$Activity <- label_string$V2;
+label.string <- join(measure.activities, labels, by="V1");
+std.or.mean.measures$Activity <- label.string$V2;
 
 #4. Appropriately labels the data set with descriptive variable names.
 
 #get the std/mean names from the full features list and
 #reset the data frame names
-descriptive_variables <- features[std_or_mean_idx,2];
-descriptive_variables <- append(descriptive_variables, c("Activity"))
-colnames(std_or_mean_measures) <- descriptive_variables;
+std.or.mean.features <- features[std.or.mean.idx,2];
+#add activity column
+descriptive.variables <- append(std.or.mean.features, c("Activity"))
+colnames(std.or.mean.measures) <- descriptive.variables;
 
 
 ##WRITE IT OUT
-dataset1 <- file.path(working_dir, "dataset1.csv");
-write.csv(std_or_mean_measures, row.names=FALSE, file = dataset1)
+dataset1 <- file.path(working.dir, "dataset1.csv");
+write.csv(std.or.mean.measures, row.names=FALSE, file = dataset1)
 
 #5. Creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 
-subject_test_file <- file.path(test_dir, "subject_test.txt");
-subject_test <- read.table(subject_test_file, stringsAsFactors=FALSE);
+subject.test.file <- file.path(test.dir, "subject_test.txt");
+subject.test <- read.table(subject.test.file, stringsAsFactors=FALSE);
 
-subject_train_file <- file.path(train_dir, "subject_train.txt");
-subject_train <- read.table(subject_train_file, stringsAsFactors=FALSE);
+subject.train.file <- file.path(train.dir, "subject_train.txt");
+subject.train <- read.table(subject.train.file, stringsAsFactors=FALSE);
 
 #build subject in order that data was appended - test first, then train
-subjects <- rbind(subject_test, subject_train);
-std_or_mean_measures$Subject <- subjects;
+subjects <- rbind(subject.test, subject.train);
+#add subject to our dataset
+std.or.mean.measures$Subject <- subjects$V1;
 
+#http://stackoverflow.com/questions/9723208/aggregate-multiple-variables-simultaneously was helpful here
 
+#Use reshape2 functions to average the subject and activity over multiple 
+#variables
+measures.melted <- melt(std.or.mean.measures, id=c("Subject","Activity"), measured=std.or.mean.measures)
+tidy.set <- dcast(measures.melted, Subject + Activity ~ variable, mean)
 
+#write out tidy dataset
+tidy.set.file <- file.path(working.dir, "tidyset.csv");
+write.csv(tidy.set, row.names=FALSE, file = tidy.set.file)
