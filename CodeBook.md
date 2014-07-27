@@ -94,13 +94,10 @@ Code Book
 * fBodyBodyGyroJerkMag-mean-mean
 * fBodyBodyGyroJerkMag-std-mean
 
-   The tBody* and fBody* variables are measurements from the UCI Har dataset which have been averaged for a given activity and subject.  See the file features_info.txt in the UCI HAR Dataset for the meaning of each of these variables prior to the averaging.
+   The tBody* and fBody* variables are measurements from the UCI Har dataset which have been averaged for a given activity and subject.  See the file features_info.txt in the UCI HAR Dataset for the meaning and units for each of these variables prior to the averaging.
  
 
 Instruction List
 ================
 See README.md for instructions to regenerate the dataset.
-
-
-
 
