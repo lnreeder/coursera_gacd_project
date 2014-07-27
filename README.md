@@ -17,8 +17,8 @@ already if you don't have it by typing `install.packages("plyr")` in R.
 The scripts also use the reshape2 package for dcast and melt functions.  If 
 you don't have it installed, you can install with `install.packages("reshape2")`.
 
-Running the script
-------------------
+Generating the tidy data set
+----------------------------
 
 1. Download dataset from https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip and rename to Dataset.zip
 1. Place the base dataset Dataset.zip in a working folder.
