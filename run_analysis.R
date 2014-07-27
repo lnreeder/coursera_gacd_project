@@ -13,8 +13,8 @@ tmpdir <- "tmp";
 working.dir <- file.path(".", tmpdir);
 dir.create(working.dir, showWarnings = FALSE)
 
-#extract package 
-unzip("0Dataset.zip", exdir=working.dir);
+#unzip data into working dir
+unzip("Dataset.zip", exdir=working.dir);
 
 #1. Merges the training and the test sets to create one data set.
 
@@ -109,6 +109,13 @@ std.or.mean.measures$Subject <- subjects$V1;
 #variables
 measures.melted <- melt(std.or.mean.measures, id=c("Subject","Activity"), measured=std.or.mean.measures)
 tidy.set <- dcast(measures.melted, Subject + Activity ~ variable, mean)
+
+#dump parenthesis (I don't like them in columns)
+names(tidy.set) <- sub("\\(\\)","",names(tidy.set)) 
+# and append mean to those columns that have been averaged
+#all data columns except Subject and Activity start with t of F
+names(tidy.set) <- sub("^t(.*)$","t\\1-mean",names(tidy.set)) 
+names(tidy.set) <- sub("^f(.*)$","t\\1-mean",names(tidy.set)) 
 
 #write out tidy dataset
 tidy.set.file <- file.path(working.dir, "tidyset.csv");

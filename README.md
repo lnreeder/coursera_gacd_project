@@ -17,7 +17,8 @@ you don't have it installed, you can install with `install.packages("reshape2")`
 Running the script
 ------------------
 
-1. Place the base dataset 0Dataset.zip in a working folder.
+1. Download dataset from https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip and rename to Dataset.zip
+1. Place the base dataset Dataset.zip in a working folder.
 2. Start R (Mac/Linux users, start R in the working folder), and then type 
 `source("run_analysis.R")`
 3. The script will create a working directory called "tmp", unzip the dataset 
