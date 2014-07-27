@@ -1,6 +1,9 @@
 Course project for Coursera Getting and Cleaning Data
 =====================================================
 
+This is the instructions list for regenerating the tidy dataset 
+required by the "Getting and Cleaning Data" course project.
+
 
 Dependencies
 ------------
@@ -27,7 +30,9 @@ file into it, and perform analysis.
 4. The script saves two datasets in the working directory "tmp".  The first 
 dataset is the merged dataset with only mean and std measurements, as well as
 activities as defined by steps 1-4 of the project.  The second dataset is the
-tidy dataset defined by step 5 of the project.
+tidy dataset called  defined by step 5 of the project.  This dataset is called
+`tidyset.csv', and can be loaded in a spreadsheet or in R with 
+`read.csv("tidyset.csv")`.
 
 
 
